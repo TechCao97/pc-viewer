@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>目录</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <base th:href="@{/}">
+    <link rel="stylesheet" href="css/vant_rem.css"/>
+    <script type='text/javascript' src='js/vue.js'></script>
+    <script type='text/javascript' src="js/vant_rem.js"></script>
+    <script type='text/javascript' src="js/axios.min.js"></script>
+    <script type='text/javascript' src="js/request.js"></script>
+    <script type='text/javascript' src="js/commonUtils.js"></script>
+    <script type='text/javascript' src="js/moment.js"></script>
+</head>
+<body>
+<div id="app" class="body">
+    <div class="path">
+        <span v-for="(item, index) in paths" @click="goPath(item)"><span v-if="index !== 0"> / </span><span class="path-item">{{ item.name }}</span></span>
+    </div>
+    <div :class="'item item-' + (index % 2 === 0 ? 'even' : 'odd')" v-for="(item, index) in menu" @click="handleClick(item)">
+        <van-icon class="icon" v-if="item.type === 'DIRECTORY'" name="ellipsis"></van-icon>
+        <van-icon class="icon" v-if="item.type === 'IMAGE'" name="photo-o"></van-icon>
+        <van-icon class="icon" v-if="item.type === 'VIDEO'" name="video-o"></van-icon>
+        <van-icon class="icon" v-if="item.type === 'FILE'" name="orders-o"></van-icon>
+
+        <span class="name">{{ item.name }}</span>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+const menu = [[${menu}]]
+const path = [[${path}]]
+const lock = [[${lock}]]
+function toast(msg, type) {
+    let obj = {
+        message: msg,
+        position: 'top',
+        forbidClick: true,
+        duration: 2000
+    }
+    if (type == null) {
+        vant.Toast(obj)
+    } else {
+        vant.Toast[type](obj)
+    }
+}
+
+let app = new Vue({
+    el: '#app',
+    data() {
+        return {
+            menu,
+            paths: [
+                {
+                    name: "root",
+                    path: ""
+                }
+            ]
+        }
+    },
+    created() {
+        if (!isNullOrEmpty(lock)) {
+            let tempPath = path.replace(lock, "")
+            let paths = tempPath.split("/").filter(item => item != null && item !== "")
+            let cur = lock
+            this.paths.push({
+                name: lock,
+                path: cur
+            })
+            paths.forEach(item => {
+                cur = cur + "/" + item
+                this.paths.push({
+                    name: item,
+                    path: cur
+                })
+            })
+        } else {
+            let paths = path.split("/").filter(item => item != null && item !== "")
+            let cur = ""
+            paths.forEach(item => {
+                if (cur != null && cur !== "") cur = cur + "/"
+                cur = cur + item
+                this.paths.push({
+                    name: item,
+                    path: cur
+                })
+            })
+        }
+    },
+    methods: {
+        moment,
+        goPath(item) {
+            if (item.name === "root") {
+                window.location.href = "/viewer/index"
+            } else {
+                let url = `/viewer/index?path=${encodeURIComponent(item.path)}`
+                if (!isNullOrEmpty(lock)) {
+                    url = `${url}&lock=${encodeURIComponent(lock)}`
+                }
+                window.location.href = url
+            }
+        },
+        handleClick(item) {
+            if (item.type === "DIRECTORY") {
+                if (isNullOrEmpty(path)) {
+                    //根目录文件夹
+                    let url = `/viewer/index?path=${encodeURIComponent(item.name)}`
+                    if (item.lock) {
+                        url = `${url}&lock=${encodeURIComponent(item.name)}`
+                    }
+                    window.location.href = url
+                } else {
+                    //非根目录文件夹
+                    let url = `/viewer/index?path=${encodeURIComponent(path + "/" + item.name)}`
+                    if (!isNullOrEmpty(lock)) {
+                        url = `${url}&lock=${lock}`
+                    }
+                    window.location.href = url
+                }
+            } else if (item.type === "IMAGE") {
+                let filter = menu.filter(e => e.type === "IMAGE")
+                let index = filter.findIndex(e => e.name === item.name)
+                vant.ImagePreview({
+                    images: filter.map(e => `/viewer/download?path=${encodeURIComponent(path + "/" + e.name)}`),
+                    startPosition: index
+                })
+            } else {
+                window.location.href = `/viewer/download?path=${encodeURIComponent(path + "/" + item.name)}`
+            }
+        }
+    }
+})
+</script>
+
+<style>
+.body {
+    font-size: 14rem;
+    line-height: 1.5;
+}
+.path {
+    padding: 10rem 40rem;
+    text-align: center;
+    word-break: break-all;
+}
+.path-item {
+    color: #4682B4;
+}
+.item {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 10rem;
+}
+.item-even {
+    background-color: whitesmoke;
+}
+.icon {
+    margin-right: 10rem;
+}
+.name {
+    word-break: break-all;
+}
+</style>
+</html>

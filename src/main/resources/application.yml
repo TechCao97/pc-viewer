@@ -1,0 +1,11 @@
+server:
+  port: 8100
+  servlet:
+    context-path: /viewer
+    session:
+      timeout: 120m
+  tomcat:
+    uri-encoding: utf-8
+spring:
+  application:
+    name: pc-viewer
