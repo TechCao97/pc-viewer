@@ -2,8 +2,6 @@ package cn.billycao.pcviewer.frame;
 
 import cn.billycao.pcviewer.config.DirectoryConfig;
 import cn.billycao.pcviewer.entity.ConfigPathItem;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
 import org.thymeleaf.util.StringUtils;
 
@@ -31,8 +29,9 @@ public class ConfigTable {
 
     public ConfigTable(IndexFrame frame) {
         this.indexFrame = frame;
-        List<ConfigPathItem> data = frame.getConfig().getPaths();
-        this.sourceData = copyData(data);
+        List<ConfigPathItem> paths = frame.getConfig().getPaths();
+        List<ConfigPathItem> data = DirectoryConfig.copyData(paths);
+        this.sourceData = DirectoryConfig.copyData(paths);
 
         table = new JTable();
         this.setDataAndModel(data);
@@ -66,7 +65,7 @@ public class ConfigTable {
             }
             this.refreshModel();
         });
-        btnReset.addActionListener(e -> this.setDataAndModel(copyData(this.sourceData)));
+        btnReset.addActionListener(e -> this.setDataAndModel(DirectoryConfig.copyData(this.sourceData)));
         btnSave.addActionListener(e -> {
             try {
                 if (this.table.getCellEditor() != null) {
@@ -75,7 +74,7 @@ public class ConfigTable {
                 this.data = this.data.stream().filter(item -> !StringUtils.isEmpty(item.getPath())).collect(Collectors.toList());
                 this.refreshModel();
                 //更新视图数据
-                this.sourceData = copyData(this.data);
+                this.sourceData = DirectoryConfig.copyData(this.data);
                 //更新内存中的配置项
                 this.indexFrame.setConfig(new DirectoryConfig(this.data));
                 //更新持久化配置文件
@@ -96,11 +95,6 @@ public class ConfigTable {
 
     public void refreshModel() {
         this.setModel(new TableModel(columnNames, convert(this.data)));
-    }
-
-    public List<ConfigPathItem> copyData(List<ConfigPathItem> data) {
-        return JSON.parseObject(JSON.toJSONString(data), new TypeReference<List<ConfigPathItem>>() {
-        });
     }
 
     public void setModel(TableModel model) {

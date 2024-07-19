@@ -8,9 +8,8 @@ import lombok.Data;
 import org.apache.tomcat.util.net.WriteBuffer;
 import org.thymeleaf.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -81,11 +80,15 @@ public class DirectoryConfig {
                 throw new RuntimeException(e);
             }
         }
-        try (PrintWriter pw = new PrintWriter(file)) {
-            pw.write(jo.toJSONString());
+        try (OutputStreamWriter osw = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
+            osw.write(jo.toJSONString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public static List<ConfigPathItem> copyData(List<ConfigPathItem> data) {
+        return JSON.parseObject(JSON.toJSONString(data), new TypeReference<List<ConfigPathItem>>() {
+        });
+    }
 }

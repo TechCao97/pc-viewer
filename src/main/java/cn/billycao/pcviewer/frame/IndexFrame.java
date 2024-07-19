@@ -30,10 +30,10 @@ public class IndexFrame extends JFrame {
 
     public IndexFrame(DirectoryConfig config) {
         this.config = config;
-        this.initFrame(config.getPaths());
+        this.initFrame();
     }
 
-    public void initFrame(List<ConfigPathItem> data) {
+    public void initFrame() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setTitle("PcViewer");
@@ -64,7 +64,7 @@ public class IndexFrame extends JFrame {
         btnStart.setPreferredSize(new Dimension(contentWith, contentHeight));
         panel.add(btnStart);
 
-        Point position = FrameUtils.getCenterTopPosition(size, 10);
+        Point position = FrameUtils.getCenterTopPosition(size, 15);
         this.setLocation(position);
         this.add(panel);
         this.pack();
