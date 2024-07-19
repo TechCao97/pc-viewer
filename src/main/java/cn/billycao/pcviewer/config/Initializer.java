@@ -26,7 +26,7 @@ public class Initializer {
         ExtraConfig extraConfig;
         if (config.exists() && config.isFile()) {
             String json = Files.readAllLines(Paths.get("./config.json")).stream().collect(Collectors.joining(System.lineSeparator()));
-            extraConfig = JSON.parseObject(json, ExtraConfig.class);
+            extraConfig = JSON.parseObject(json.replace("\\", "/"), ExtraConfig.class);
         } else {
             extraConfig = new ExtraConfig();
             extraConfig.setPaths(Collections.singletonList(new ConfigPathItem("C:", true)));
