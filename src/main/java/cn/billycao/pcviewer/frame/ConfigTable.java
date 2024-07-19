@@ -3,18 +3,14 @@ package cn.billycao.pcviewer.frame;
 import cn.billycao.pcviewer.config.DirectoryConfig;
 import cn.billycao.pcviewer.entity.ConfigPathItem;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
-import lombok.Value;
 import org.thymeleaf.util.StringUtils;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -41,8 +37,7 @@ public class ConfigTable {
         table = new JTable();
         this.setDataAndModel(data);
         scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().setPreferredSize(new Dimension(IndexFrame.contentWith, IndexFrame.contentHeight * 5));
-
+        scrollPane.getViewport().setPreferredSize(new Dimension(IndexFrame.contentWith, IndexFrame.contentHeight * 3));
         btnAdd = new JButton("+");
         btnDelete = new JButton("-");
         btnReset = new JButton("重置");
@@ -56,6 +51,12 @@ public class ConfigTable {
         btnAdd.addActionListener(e -> {
             this.data.add(new ConfigPathItem("", false));
             this.refreshModel();
+            scrollPane.repaint();
+            SwingUtilities.invokeLater(() -> {
+                // 滚动到最下方
+                JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+                verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+            });
         });
         btnDelete.addActionListener(e -> {
             int[] selectedRows = this.table.getSelectedRows();
@@ -123,7 +124,8 @@ public class ConfigTable {
             table.setModel(model);
             table.setRowHeight(IndexFrame.contentHeight);
             table.getTableHeader().setPreferredSize(new Dimension(0, IndexFrame.contentHeight));
-            table.getColumnModel().getColumn(0).setPreferredWidth(380);
+            TableColumn column = table.getColumnModel().getColumn(0);
+            column.setPreferredWidth(400);
         });
     }
 

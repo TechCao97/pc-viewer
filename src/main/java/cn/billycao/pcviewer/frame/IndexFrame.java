@@ -3,6 +3,7 @@ package cn.billycao.pcviewer.frame;
 import cn.billycao.pcviewer.PcViewerApplication;
 import cn.billycao.pcviewer.config.DirectoryConfig;
 import cn.billycao.pcviewer.entity.ConfigPathItem;
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,7 @@ import java.util.List;
 @Data
 public class IndexFrame extends JFrame {
     private DirectoryConfig config;
-    public static int contentWith = 400;
+    public static int contentWith = 500;
     public static int contentHeight = 40;
     public static int contentGap = 20;
     private StartButton btnStart;
@@ -37,7 +38,7 @@ public class IndexFrame extends JFrame {
         this.setResizable(false);
         this.setTitle("PcViewer");
         JPanel panel = new JPanel();
-        Point size = new Point(contentWith + contentGap * 2, 460);
+        Point size = new Point(contentWith + contentGap * 2, 380);
         panel.setPreferredSize(new Dimension(size.x, size.y));
         panel.setLayout(new FlowLayout(FlowLayout.CENTER, contentGap, contentGap));
 
@@ -84,8 +85,8 @@ public class IndexFrame extends JFrame {
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         //加载swing皮肤
-        FlatLightLaf.install();
-        UIManager.setLookAndFeel(new FlatLightLaf());
+        FlatLightLaf.setup();
+        UIManager.setLookAndFeel(new FlatDarkLaf());
         //统一设置字体
         FontUIResource fontRes = new FontUIResource(new Font("微软雅黑", Font.PLAIN, 16));
         for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {

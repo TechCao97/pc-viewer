@@ -36,3 +36,4 @@ test
 mvnw
 mvnw.cmd
 .mvn
+config.json
