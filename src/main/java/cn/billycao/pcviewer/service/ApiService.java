@@ -1,6 +1,6 @@
 package cn.billycao.pcviewer.service;
 
-import cn.billycao.pcviewer.config.ExtraConfig;
+import cn.billycao.pcviewer.config.DirectoryConfig;
 import cn.billycao.pcviewer.constant.FileConstant;
 import cn.billycao.pcviewer.enums.FileType;
 import cn.billycao.pcviewer.entity.File;
@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class ApiService {
-    private ExtraConfig config;
+    private DirectoryConfig config;
 
     public List<File> getRoots() {
-        return config.getPaths().stream().map(e -> new File(e.getPath(), FileType.DIRECTORY, e.isLock())).collect(Collectors.toList());
+        return config.getPaths().stream().map(e -> new File(e.getPath(), FileType.DIRECTORY, e.getLock())).collect(Collectors.toList());
     }
 
     public List<File> getMenu(String path) {

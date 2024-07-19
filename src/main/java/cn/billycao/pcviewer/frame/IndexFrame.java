@@ -1,8 +1,12 @@
 package cn.billycao.pcviewer.frame;
 
 import cn.billycao.pcviewer.PcViewerApplication;
+import cn.billycao.pcviewer.config.DirectoryConfig;
+import cn.billycao.pcviewer.entity.ConfigPathItem;
 import com.formdev.flatlaf.FlatLightLaf;
-import org.springframework.boot.SpringApplication;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.swing.*;
@@ -11,40 +15,55 @@ import java.awt.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class IndexFrame extends JFrame {
-    private JTextField txfIp;
+    private DirectoryConfig config;
+    public static int contentWith = 400;
+    public static int contentHeight = 40;
+    public static int contentGap = 20;
     private StartButton btnStart;
     private ConfigurableApplicationContext springContext;
 
-    public IndexFrame() {
-        this.initFrame();
+    public IndexFrame(DirectoryConfig config) {
+        this.config = config;
+        this.initFrame(config.getPaths());
     }
 
-    public void initFrame() {
+    public void initFrame(List<ConfigPathItem> data) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setTitle("PcViewer");
         JPanel panel = new JPanel();
-        Point size = new Point(360, 140);
+        Point size = new Point(contentWith + contentGap * 2, 460);
         panel.setPreferredSize(new Dimension(size.x, size.y));
-        panel.setLayout(new FlowLayout(FlowLayout.LEADING, 20, 20));
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, contentGap, contentGap));
 
-        txfIp = new JTextField(getPath());
+        ConfigTable tblConfig = new ConfigTable(this);
+        tblConfig.addTo(panel);
+
+        JTextField txfIp = new JTextField(getPath());
         txfIp.setEditable(false);
+        txfIp.setPreferredSize(new Dimension(contentWith, contentHeight));
+        panel.add(txfIp);
+
         btnStart = new StartButton(e -> {
-            this.springContext = SpringApplication.run(PcViewerApplication.class);
+            // 使用 SpringApplicationBuilder 构建 Spring Boot 应用程序
+            this.springContext = new SpringApplicationBuilder()
+                    .sources(PcViewerApplication.class) // 指定启动类
+                    .initializers((applicationContext) -> applicationContext.getBeanFactory().registerSingleton("directoryConfig", config)) // 将 config 对象注册到容器中
+                    .run(); // 启动 Spring Boot 应用程序
             SwingUtilities.invokeLater(() -> this.btnStart.setLoading(false));
         }, e -> {
             this.springContext.close();
             SwingUtilities.invokeLater(() -> this.btnStart.setLoading(false));
         });
-        txfIp.setPreferredSize(new Dimension(320, 40));
-        btnStart.setPreferredSize(new Dimension(320, 40));
-        panel.add(txfIp);
+        btnStart.setPreferredSize(new Dimension(contentWith, contentHeight));
         panel.add(btnStart);
 
-        Point position = FrameUtils.getCenterTopPosition(size, 20);
+        Point position = FrameUtils.getCenterTopPosition(size, 10);
         this.setLocation(position);
         this.add(panel);
         this.pack();
@@ -57,6 +76,10 @@ public class IndexFrame extends JFrame {
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setConfig(DirectoryConfig config) {
+        this.config = config;
     }
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
@@ -73,7 +96,7 @@ public class IndexFrame extends JFrame {
             }
         }
 
-        IndexFrame frame = new IndexFrame();
+        IndexFrame frame = new IndexFrame(DirectoryConfig.init());
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
     }
 }

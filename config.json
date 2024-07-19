@@ -1,12 +1,1 @@
-{
-  "paths": [
-    {
-      "path": "C:/Program Files",
-      "lock": true
-    },
-    {
-      "path": "C:/Program Files (x86)",
-      "lock": false
-    }
-  ]
-}
+{"paths":[{"lock":false,"path":"D:/root/project/caojiaxin/pc-viewer/target"}]}
