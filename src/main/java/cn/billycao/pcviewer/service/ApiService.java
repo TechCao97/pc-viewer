@@ -113,7 +113,7 @@ public class ApiService {
             // path是指欲下载的文件的路径。
             java.io.File file = new java.io.File(path);
             // 取得文件名。
-            String name = file.getName();
+            String name = java.net.URLEncoder.encode(file.getName(), "UTF-8");
 
             // 清空response
             response.reset();
@@ -122,11 +122,10 @@ public class ApiService {
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+
             toClient = response.getOutputStream();
-            String contentType = FileConstant.CONTENT_TYPE.get(this.getExtend(name));
+            String contentType = FileConstant.CONTENT_TYPE.get(this.getExtend(name).toLowerCase());
             if (contentType == null) {
-                String userAgent = request.getHeader("User-Agent");
-                name = java.net.URLEncoder.encode(name, "UTF-8");
                 response.addHeader("Content-Disposition", "attachment;filename=" + name);
                 contentType = "application/octet-stream";
             }

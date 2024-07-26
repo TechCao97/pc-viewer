@@ -15,19 +15,18 @@ public class FileConstant {
         put("jpg", "image/jpeg");
         put("jpeg", "image/jpeg");
         put("png", "image/png");
-        put("tif", "image/tiff");
-        put("tiff", "image/tiff");
-        put("ico", "image/x-icon");
+        put("svg", "image/svg");
         put("bmp", "image/bmp");
         put("gif", "image/gif");
+        put("webp", "image/webp");
         put("mp4", "video/mp4");
-        put("avi", "video/avi");
-        put("wmv", "video/wmv");
-        put("mov", "video/mov");
-        put("flv", "video/flv");
-        put("mkv", "video/mkv");
-        put("rmvb", "video/rmvb");
-        put("webm", "video/webm");
+//        put("avi", "video/avi");
+//        put("wmv", "video/wmv");
+//        put("mov", "video/mov");
+//        put("flv", "video/flv");
+//        put("mkv", "video/mkv");
+//        put("rmvb", "video/rmvb");
+//        put("webm", "video/webm");
     }};
 
     public static final Map<FileType, Integer> TYPE_ORDER = new HashMap<FileType, Integer>() {{
